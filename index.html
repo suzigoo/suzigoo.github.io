@@ -252,6 +252,12 @@
       box-shadow: 0 16px 34px rgba(240, 179, 90, 0.2);
     }
 
+    .button.secondary-download {
+      border-color: rgba(159, 178, 196, 0.38);
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
     .metrics {
       flex-wrap: wrap;
       gap: 14px;
@@ -501,6 +507,13 @@
       margin-bottom: 28px;
     }
 
+    .download-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
     .download-band h3 {
       margin-bottom: 6px;
       font-size: 24px;
@@ -640,6 +653,7 @@
           <p class="lead">不用写代码的数据处理工具。把 Excel、数据库、文件里的数据像搭积木一样连起来，清洗、合并、分析，最后导出结果，或者交给系统自动运行。</p>
           <div class="actions">
             <a class="button download" href="https://site-css-test.oss-cn-hangzhou.aliyuncs.com/download/suzigoo-setup-5.0.1-win64.exe">下载 Windows 5.0.1</a>
+            <a class="button secondary-download" href="#download" onclick="alert('macOS 5.0.1 安装包请联系开发者获取。');">下载 macOS 5.0.1</a>
           </div>
           <div class="metrics" aria-label="核心能力">
             <div class="metric"><strong>上百个积木</strong><span>面向业务场景开箱即用</span></div>
@@ -746,7 +760,10 @@
             <h3>Windows x64 安装包 5.0.1</h3>
             <p>适用于 Windows x64 环境，下载后运行安装程序即可开始使用 SuziGoo。</p>
           </div>
-          <a class="button download" href="https://site-css-test.oss-cn-hangzhou.aliyuncs.com/download/suzigoo-setup-5.0.1-win64.exe">下载 suzigoo-setup-5.0.1-win64.exe</a>
+          <div class="download-actions">
+            <a class="button download" href="https://site-css-test.oss-cn-hangzhou.aliyuncs.com/download/suzigoo-setup-5.0.1-win64.exe">下载 Windows 5.0.1</a>
+            <a class="button secondary-download" href="#download" onclick="alert('macOS 5.0.1 安装包请联系开发者获取。');">下载 macOS 5.0.1</a>
+          </div>
         </div>
         <div class="section-heading">
           <h2 id="docs-title">开发、构建与交付文档</h2>
