@@ -544,6 +544,42 @@
       font-size: 14px;
     }
 
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 40;
+      width: min(360px, calc(100% - 32px));
+      padding: 16px 18px;
+      border: 1px solid rgba(240, 179, 90, 0.4);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(240, 179, 90, 0.18), rgba(41, 214, 178, 0.12)),
+        rgba(9, 24, 32, 0.96);
+      box-shadow: 0 22px 52px rgba(0, 0, 0, 0.36);
+      color: var(--ink);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(14px);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--gold);
+    }
+
+    .toast span {
+      color: var(--soft);
+      font-size: 14px;
+    }
+
     .footer-inner {
       display: flex;
       justify-content: space-between;
@@ -653,7 +689,7 @@
           <p class="lead">不用写代码的数据处理工具。把 Excel、数据库、文件里的数据像搭积木一样连起来，清洗、合并、分析，最后导出结果，或者交给系统自动运行。</p>
           <div class="actions">
             <a class="button download" href="https://site-css-test.oss-cn-hangzhou.aliyuncs.com/download/suzigoo-setup-5.0.1-win64.exe">下载 Windows 5.0.1</a>
-            <a class="button secondary-download" href="#download" onclick="alert('macOS 5.0.1 安装包请联系开发者获取。');">下载 macOS 5.0.1</a>
+            <a class="button secondary-download" href="#download" data-toast="macos">下载 macOS 5.0.1</a>
           </div>
           <div class="metrics" aria-label="核心能力">
             <div class="metric"><strong>上百个积木</strong><span>面向业务场景开箱即用</span></div>
@@ -762,7 +798,7 @@
           </div>
           <div class="download-actions">
             <a class="button download" href="https://site-css-test.oss-cn-hangzhou.aliyuncs.com/download/suzigoo-setup-5.0.1-win64.exe">下载 Windows 5.0.1</a>
-            <a class="button secondary-download" href="#download" onclick="alert('macOS 5.0.1 安装包请联系开发者获取。');">下载 macOS 5.0.1</a>
+            <a class="button secondary-download" href="#download" data-toast="macos">下载 macOS 5.0.1</a>
           </div>
         </div>
         <div class="section-heading">
@@ -809,5 +845,21 @@
       </a>
     </div>
   </footer>
+  <div class="toast" id="download-toast" role="status" aria-live="polite">
+    <strong>macOS 5.0.1</strong>
+    <span>安装包请联系开发者获取。</span>
+  </div>
+  <script>
+    const toast = document.getElementById("download-toast");
+    let toastTimer = 0;
+
+    document.querySelectorAll("[data-toast='macos']").forEach((button) => {
+      button.addEventListener("click", () => {
+        clearTimeout(toastTimer);
+        toast.classList.add("show");
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
+      });
+    });
+  </script>
 </body>
 </html>
