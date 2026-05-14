@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SuziGoo 是面向业务场景的数据积木开发工具，支持可视化流程编排、本地大数据处理和调度系统集成。">
+  <title>SuziGoo</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #061016;
+      --ink: #f3f7fb;
+      --muted: #9fb2c4;
+      --soft: #c7d8e6;
+      --line: rgba(159, 178, 196, 0.22);
+      --panel: rgba(13, 29, 39, 0.78);
+      --panel-strong: rgba(20, 45, 58, 0.92);
+      --teal: #29d6b2;
+      --blue: #4aa8ff;
+      --gold: #f0b35a;
+      --coral: #f07167;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 16% 10%, rgba(41, 214, 178, 0.16), transparent 30%),
+        radial-gradient(circle at 84% 4%, rgba(74, 168, 255, 0.16), transparent 28%),
+        linear-gradient(180deg, #061016 0%, #081720 44%, #0b151b 100%);
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.32;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--teal);
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(6, 16, 22, 0.78);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav,
+    .hero-inner,
+    .section-inner,
+    .footer-inner {
+      width: min(1200px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 68px;
+      gap: 24px;
+    }
+
+    .brand,
+    .nav-links,
+    .actions,
+    .metrics {
+      display: flex;
+      align-items: center;
+    }
+
+    .brand {
+      gap: 12px;
+      font-weight: 800;
+    }
+
+    .brand img {
+      width: 34px;
+      height: 34px;
+      filter: drop-shadow(0 0 16px rgba(41, 214, 178, 0.38));
+    }
+
+    .nav-links {
+      gap: 20px;
+      color: var(--soft);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .icon-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--ink);
+    }
+
+    .icon-link svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 92vh;
+      display: grid;
+      align-items: center;
+      overflow: hidden;
+      padding: 76px 0 42px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(6, 16, 22, 0.94) 0%, rgba(6, 16, 22, 0.72) 38%, rgba(6, 16, 22, 0.24) 72%, rgba(6, 16, 22, 0.86) 100%),
+        url("screenshots/business-workflow.png") right 48% / min(78vw, 1160px) auto no-repeat;
+      opacity: 0.96;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: 7vw;
+      bottom: 10vh;
+      width: min(52vw, 720px);
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--teal), var(--blue), transparent);
+      box-shadow: 0 0 34px rgba(41, 214, 178, 0.7);
+      transform: rotate(-7deg);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 0.98fr) minmax(320px, 0.72fr);
+      gap: 48px;
+      align-items: center;
+    }
+
+    .hero-copy {
+      max-width: 680px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 18px;
+      color: var(--teal);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 32px;
+      height: 2px;
+      background: var(--teal);
+      box-shadow: 0 0 18px rgba(41, 214, 178, 0.75);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: clamp(54px, 9vw, 112px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 650px;
+      margin-bottom: 30px;
+      color: var(--soft);
+      font-size: clamp(18px, 2vw, 22px);
+    }
+
+    .actions {
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 34px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 10px 18px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .button.primary {
+      border-color: rgba(41, 214, 178, 0.62);
+      background: linear-gradient(135deg, rgba(41, 214, 178, 0.96), rgba(74, 168, 255, 0.92));
+      color: #041118;
+      box-shadow: 0 16px 34px rgba(41, 214, 178, 0.22);
+    }
+
+    .button.download {
+      border-color: rgba(240, 179, 90, 0.7);
+      color: #130b03;
+      background: linear-gradient(135deg, #f0b35a, #ffd37d);
+      box-shadow: 0 16px 34px rgba(240, 179, 90, 0.2);
+    }
+
+    .metrics {
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .metric {
+      min-width: 138px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(6, 16, 22, 0.62);
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--ink);
+      font-size: 23px;
+      line-height: 1.1;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hero-panel {
+      position: relative;
+      min-height: 430px;
+      padding: 18px;
+      border: 1px solid rgba(41, 214, 178, 0.3);
+      border-radius: 8px;
+      background: linear-gradient(145deg, rgba(7, 20, 28, 0.82), rgba(16, 38, 49, 0.64));
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel img {
+      display: block;
+      width: 100%;
+      height: 270px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .panel-tile {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.055);
+      color: var(--soft);
+      font-size: 13px;
+    }
+
+    .panel-tile b {
+      display: block;
+      color: var(--teal);
+      font-size: 18px;
+    }
+
+    section {
+      position: relative;
+      padding: 82px 0;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+      gap: 44px;
+      align-items: end;
+      margin-bottom: 34px;
+    }
+
+    h2 {
+      margin-bottom: 0;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .section-heading p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature,
+    .doc-link,
+    .list li,
+    .shot,
+    .workflow-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
+    }
+
+    .feature {
+      min-height: 190px;
+      padding: 22px;
+    }
+
+    .feature::before {
+      content: attr(data-code);
+      display: inline-flex;
+      margin-bottom: 18px;
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .feature h3 {
+      margin-bottom: 9px;
+      font-size: 19px;
+    }
+
+    .feature p,
+    .doc-link span {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: 1.18fr 0.82fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .shot {
+      overflow: hidden;
+      margin: 0;
+    }
+
+    .shot.primary {
+      grid-row: span 2;
+    }
+
+    .shot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 240px;
+      object-fit: cover;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .shot.primary img {
+      min-height: 530px;
+    }
+
+    .shot figcaption,
+    .workflow-card figcaption {
+      padding: 14px 16px 16px;
+      color: var(--soft);
+      font-weight: 800;
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .workflow-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .workflow-main,
+    .workflow-card img {
+      display: block;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0c1820;
+    }
+
+    .workflow-main {
+      box-shadow: var(--shadow);
+    }
+
+    .workflow-shots {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .workflow-card {
+      overflow: hidden;
+      margin: 0;
+    }
+
+    .workflow-card img {
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+    }
+
+    .list {
+      display: grid;
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .list li {
+      padding: 18px 18px 18px 20px;
+      border-left: 4px solid var(--teal);
+      color: var(--soft);
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .download-band {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 28px;
+      align-items: center;
+      padding: 26px;
+      border: 1px solid rgba(240, 179, 90, 0.36);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(240, 179, 90, 0.16), rgba(41, 214, 178, 0.08)),
+        var(--panel-strong);
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+
+    .download-band h3 {
+      margin-bottom: 6px;
+      font-size: 24px;
+    }
+
+    .download-band p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .doc-link {
+      min-height: 124px;
+      padding: 20px;
+    }
+
+    .doc-link strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .site-footer {
+      position: relative;
+      padding: 34px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(6, 16, 22, 0.72);
+      font-size: 14px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    @media (max-width: 980px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 15px 0;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+        white-space: normal;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .hero::before {
+        background:
+          linear-gradient(180deg, rgba(6, 16, 22, 0.86), rgba(6, 16, 22, 0.94)),
+          url("screenshots/business-workflow.png") center top / cover no-repeat;
+      }
+
+      .hero-inner,
+      .section-heading,
+      .feature-grid,
+      .gallery,
+      .workflow,
+      .docs-grid,
+      .download-band {
+        grid-template-columns: 1fr;
+      }
+
+      .shot.primary {
+        grid-row: auto;
+      }
+
+      .shot.primary img {
+        min-height: 280px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .nav,
+      .hero-inner,
+      .section-inner,
+      .footer-inner {
+        width: min(100% - 24px, 1200px);
+      }
+
+      section {
+        padding: 56px 0;
+      }
+
+      .hero-panel {
+        min-height: 0;
+      }
+
+      .hero-panel img {
+        height: 210px;
+      }
+
+      .panel-grid,
+      .workflow-shots {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="主导航">
+      <a class="brand" href="#top" aria-label="SuziGoo 首页">
+        <img src="../suzigoo-icon.png" alt="">
+        <span>SuziGoo</span>
+      </a>
+      <div class="nav-links">
+        <a href="#download">下载</a>
+        <a href="#features">能力</a>
+        <a href="#screenshots">产品截图</a>
+        <a href="#scheduler">调度集成</a>
+        <a href="#docs">文档</a>
+        <a class="icon-link" href="https://github.com/suzigoo/suzigoo-desktop" aria-label="GitHub 仓库">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.29 9.41 7.86 10.94.58.1.79-.25.79-.56v-2.01c-3.2.7-3.88-1.38-3.88-1.38-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.75 0c2.19-1.49 3.15-1.18 3.15-1.18.63 1.58.24 2.75.12 3.04.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14v3.04c0 .31.21.67.79.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/>
+          </svg>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">Data Building Blocks for Real Work</p>
+          <h1 id="hero-title">SuziGoo</h1>
+          <p class="lead">面向业务场景的数据积木开发工具。通过可视化节点编排，把数据接入、清洗、转换、分析、建模和交付连接成可复用、可解释、可调度的数据流程。</p>
+          <div class="actions">
+            <a class="button download" href="https://site-css-test.oss-cn-hangzhou.aliyuncs.com/download/suzigoo-setup-5.0.1-win64.exe">下载 Windows 5.0.1</a>
+          </div>
+          <div class="metrics" aria-label="核心能力">
+            <div class="metric"><strong>上百个积木</strong><span>面向业务场景开箱即用</span></div>
+            <div class="metric"><strong>百万级表</strong><span>单机处理轻松不卡顿</span></div>
+            <div class="metric"><strong>DAG</strong><span>生产调度集成</span></div>
+          </div>
+        </div>
+        <aside class="hero-panel" aria-label="SuziGoo 产品能力概览">
+          <img src="screenshots/ai-support.png" alt="SuziGoo AI 算法节点界面">
+          <div class="panel-grid">
+            <div class="panel-tile"><b>Visual Flow</b>拖拽、连接、配置，流程逻辑直接可见。</div>
+            <div class="panel-tile"><b>Local Engine</b>面向桌面环境的大数据清洗和离线分析。</div>
+            <div class="panel-tile"><b>AI Ready</b>把算法、模型和 LLM 能力纳入同一流程。</div>
+            <div class="panel-tile"><b>Scheduler</b>上传工作流，进入调度系统统一运行。</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="features" aria-labelledby="features-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2 id="features-title">业务人员能理解，数据团队能交付</h2>
+          <p>SuziGoo 把脚本式数据处理变成可沉淀的流程资产。每个节点代表一个清晰动作，每条连线表达真实依赖，开发、演示、交付和复盘都更直接。</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature" data-code="01 / FLOW">
+            <h3>可视化流程</h3>
+            <p>数据处理步骤在画布上展开，需求、逻辑、异常和结果都更容易被讨论和追踪。</p>
+          </article>
+          <article class="feature" data-code="02 / BLOCK">
+            <h3>业务化节点</h3>
+            <p>读取、清洗、合并、计算、建模、输出等动作封装为数据积木，配置即可复用。</p>
+          </article>
+          <article class="feature" data-code="03 / SCALE">
+            <h3>本地高性能</h3>
+            <p>适合千万级大表清洗、批量加工、特征计算和离线分析，发挥桌面环境算力。</p>
+          </article>
+          <article class="feature" data-code="04 / EXTEND">
+            <h3>插件式扩展</h3>
+            <p>基于 Eclipse RCP / PDE 插件体系，团队可以持续沉淀自己的节点和模板。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="screenshots" aria-labelledby="screenshots-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2 id="screenshots-title">真实产品界面</h2>
+          <p>页面直接采用 README 中的产品截图：流程编排、AI 算法、数据库兼容，以及后续调度集成能力都在同一条数据生产链路中。</p>
+        </div>
+        <div class="gallery">
+          <figure class="shot primary">
+            <img src="screenshots/business-workflow.png" alt="SuziGoo 可视化数据流程画布">
+            <figcaption>面向业务的可视化开发</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="screenshots/ai-support.png" alt="SuziGoo AI 算法节点">
+            <figcaption>AI 算法支持</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="screenshots/database-compatibility.png" alt="SuziGoo 数据库兼容能力">
+            <figcaption>兼容主流数据库</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="scheduler" aria-labelledby="scheduler-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2 id="scheduler-title">从桌面流程到生产调度</h2>
+          <p>桌面端完成流程设计后，可上传到 SuziGoo Scheduler 管理、预览、编排和执行，让本地工作流进入可治理的任务链。</p>
+        </div>
+        <div class="workflow">
+          <div class="workflow-stack">
+            <img class="workflow-main" src="screenshots/upload-to-scheduler.png" alt="SuziGoo 上传工作流到调度系统">
+            <div class="workflow-shots" aria-label="调度系统截图">
+              <figure class="workflow-card">
+                <img src="screenshots/scheduler-workflow-preview.png" alt="SuziGoo Scheduler 工作流预览">
+                <figcaption>工作流在线预览</figcaption>
+              </figure>
+              <figure class="workflow-card">
+                <img src="screenshots/scheduler-dag-design.png" alt="SuziGoo Scheduler DAG 编排开发">
+                <figcaption>DAG 编排开发</figcaption>
+              </figure>
+            </div>
+          </div>
+          <ul class="list">
+            <li>一键上传桌面端开发好的工作流，统一纳入调度系统管理。</li>
+            <li>调度系统支持工作流在线预览，方便确认流程内容、版本和执行对象。</li>
+            <li>多个 SuziGoo 工作流可通过 DAG 编排为跨主题、跨阶段的数据任务链。</li>
+            <li>结合定时调度、失败重试、运行日志和告警能力，完成从开发到生产的闭环。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="docs" aria-labelledby="docs-title">
+      <div class="section-inner">
+        <div class="download-band" id="download">
+          <div>
+            <h3>Windows x64 安装包 5.0.1</h3>
+            <p>适用于 Windows x64 环境，下载后运行安装程序即可开始使用 SuziGoo。</p>
+          </div>
+          <a class="button download" href="https://site-css-test.oss-cn-hangzhou.aliyuncs.com/download/suzigoo-setup-5.0.1-win64.exe">下载 suzigoo-setup-5.0.1-win64.exe</a>
+        </div>
+        <div class="section-heading">
+          <h2 id="docs-title">开发、构建与交付文档</h2>
+          <p>仓库文档覆盖 Eclipse RCP / PDE 工程结构、源码开发、构建导出、绿色包和安装包，以及离线依赖准备。</p>
+        </div>
+        <div class="docs-grid">
+          <a class="doc-link" href="technical.zh-CN.md">
+            <strong>技术架构说明</strong>
+            <span>Eclipse RCP、PDE 工程结构和产品配置。</span>
+          </a>
+          <a class="doc-link" href="development.zh-CN.md">
+            <strong>源码开发指南</strong>
+            <span>工作空间、Target Platform 和本地运行方式。</span>
+          </a>
+          <a class="doc-link" href="build.zh-CN.md">
+            <strong>源码构建指南</strong>
+            <span>JDT 编译、PDE 导出和构建边界。</span>
+          </a>
+          <a class="doc-link" href="packaging.zh-CN.md">
+            <strong>绿色包与安装包</strong>
+            <span>Windows x64 绿色包、安装包和输出校验。</span>
+          </a>
+          <a class="doc-link" href="offline-bundle.zh-CN.md">
+            <strong>离线依赖包</strong>
+            <span>首次开发需要准备的 Eclipse、JDK 和目标平台。</span>
+          </a>
+          <a class="doc-link" href="notes.zh-CN.md">
+            <strong>开发注意事项</strong>
+            <span>维护 PDE 项目时需要遵守的约束和经验。</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>SuziGoo</span>
+      <a class="icon-link" href="https://github.com/suzigoo/suzigoo-desktop" aria-label="GitHub 仓库">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.29 9.41 7.86 10.94.58.1.79-.25.79-.56v-2.01c-3.2.7-3.88-1.38-3.88-1.38-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.75 0c2.19-1.49 3.15-1.18 3.15-1.18.63 1.58.24 2.75.12 3.04.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14v3.04c0 .31.21.67.79.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/>
+        </svg>
+      </a>
+    </div>
+  </footer>
+</body>
+</html>
